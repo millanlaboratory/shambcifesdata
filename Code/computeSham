@@ -1,2 +1,7 @@
-cd ~/dev/shamBCIFESData/Code
-git pull .
+cd ~/dev/shamBCIFESData/
+git add .
+git commit -m "update DB"
+git push
+git pull
+cd Code
+matlab -nodesktop -nosplash -r CreateShamSubjectDB.m

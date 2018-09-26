@@ -4,4 +4,7 @@ git commit -m "update DB"
 git push
 git pull
 cd Code
-matlab -nodesktop -nosplash -r "run createShamSubjectDB; exit;" -sd ${HOME}/dev/shamBCIFESData/Code/ -useStartupFolderPref
+matlab -nodesktop -nosplash -r "run createShamSubjectDB; exit;" -sd ${HOME}/dev/shamBCIFESData/Code/
+git add .
+git commit -m "update DB"
+git push

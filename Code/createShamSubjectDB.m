@@ -110,10 +110,13 @@ for subject = 1:length(SubDir)
                         labels{onses}{run} = rLabels;
                         disp(['Subject: ' Sub ' , Session: ' num2str(onses) ' , Run: ' num2str(run) ' , Acc: ' num2str(round(Acc{onses}(run)))...
                             ' , Trial Acc: ' num2str(round(TrAcc{onses}(run)))]);
-
-                        save([SavePath Sub '/' GDFName(1:end-4) '.mat'],'probdata','rAcc','rTrAcc', 'rLabels');
+                        if (~exist([SavePath Sub '/' GDFName(1:end-4) '.mat'], 'file'))
+                            save([SavePath Sub '/' GDFName(1:end-4) '.mat'],'probdata','rAcc','rTrAcc', 'rLabels');
+                        end
                     else
-                        save([SavePath 'Rej/' GDFName(1:end-4) '.mat'],'probdata','rAcc','rTrAcc', 'rLabels');
+                        if (~exist([SavePath Sub '/' GDFName(1:end-4) '.mat'], 'file'))
+                            save([SavePath 'Rej/' GDFName(1:end-4) '.mat'],'probdata','rAcc','rTrAcc', 'rLabels');
+                        end
                     end
                 end
             end

@@ -4,7 +4,7 @@ lap = lap.lap;
 
 Path = '~/data/Sinergia';
 
-SavePath = '~/dev/shamBCIFESData/';
+SavePath = '~/dev/shamBCIFESData/Data/';
 
 if ~exist(SavePath, 'dir')
     mkdir(SavePath)
@@ -28,7 +28,7 @@ for subject = 1:length(SubDir)
     SubSes = SubSes(3:end);
     isd = [SubSes(:).isdir];
     SubSes = SubSes(isd);
-    
+
     onses = 0;
     countSessions = struct('flex', {}, 'ext', {});
     classifierFiles = dir([Path '/' Sub '/*.mat']);
@@ -50,7 +50,7 @@ for subject = 1:length(SubDir)
     for ses=1:length(SubSes)
         % Check if it is an online session
         SesName = SubSes(ses).name;
-        
+
         if ~isempty(strfind(SesName, 'training'))
             onses = onses + 1;
             sessionInfos = strsplit(SesName, '_');
@@ -94,7 +94,7 @@ for subject = 1:length(SubDir)
 
                     [rAcc, rTrAcc, probdata, rLabels] = analyzeOnlineStroke(GDFPath, MATPath, lap);
                 else
-                    load([SavePath Sub '/' GDFName(1:end-4) '.mat']); 
+                    load([SavePath Sub '/' GDFName(1:end-4) '.mat']);
                 end
 
                 if(~isnan(rAcc))

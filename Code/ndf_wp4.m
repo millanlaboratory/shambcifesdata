@@ -28,7 +28,7 @@ function ndf_mi(arg0, arg1, arg2)
     % Include all the required toolboxes
     ndf_mi_include();
     RESET_PROB_EVENT = 33554;
-    playbackFolder = '/home/cnbi/dev/shamBCIFESData/';
+    playbackFolder = '/home/cnbi/dev/shamBCIFESData/Data/';
 
     % Prepare and enter main loop
 %     try
@@ -143,13 +143,13 @@ function ndf_mi(arg0, arg1, arg2)
         % -------------------------------------------------------------- %
         % User EEG data configuration                                    %
         % -------------------------------------------------------------- %
-        file_extension
-        if length(find(user.classifier, 'flrst')) > 0
-            
-        else
-            
+        file_extension = '';
+        if length(strfind(loop.cfg.classifier.file, 'flrst')) > 0
+            file_extension = 'fes_flexion';
+        elseif length(strfind(loop.cfg.classifier.file, 'extrst')) > 0
+            file_extension = 'fes_extension';
         end
-        ProbFiles = dir([playbackFolder user.fid '/*.mat']); % Load all file names
+        ProbFiles = dir([playbackFolder user.fid '/*' file_extension '*.mat']); % Load all file names
         ProbFiles(end) = [];
         % Select randomly one of these runs
         % Seed with current time

@@ -14,7 +14,7 @@
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function ndf_mi(arg0, arg1, arg2)
+function ndf_mi_(arg0, arg1, arg2)
 
     % For historical reasons this function accepts 3 arguments.
     % Normally not needed, but the users might want to pass something

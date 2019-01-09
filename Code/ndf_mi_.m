@@ -28,7 +28,7 @@ function ndf_mi_(arg0, arg1, arg2)
     % Include all the required toolboxes
     ndf_mi_include();
     RESET_PROB_EVENT = 33554;
-    playbackFolder = '/home/cnbi/dev/shamBCIFESData/Data/';
+    playbackFolder = '/home/cnbi/dev/shambcifesdata/Data/';
 
     % Prepare and enter main loop
 %     try
@@ -144,9 +144,9 @@ function ndf_mi_(arg0, arg1, arg2)
         % User EEG data configuration                                    %
         % -------------------------------------------------------------- %
         file_extension = '';
-        if length(strfind(loop.cfg.classifier.file, 'flrst')) > 0
+        if ~isempty(strfind(loop.cfg.classifier.file, 'flrst'))
             file_extension = 'fes_flexion';
-        elseif length(strfind(loop.cfg.classifier.file, 'extrst')) > 0
+        elseif ~isempty(strfind(loop.cfg.classifier.file, 'extrst'))
             file_extension = 'fes_extension';
         end
         ProbFiles = dir([playbackFolder user.fid '/*' file_extension '*.mat']); % Load all file names

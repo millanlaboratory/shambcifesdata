@@ -1,5 +1,7 @@
 function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpath, lap)
-
+    FLEXION_EVENT = 782;
+    EXTENSION_EVENT = 784;
+    EXTENSION_EVENT_OLD = 781;
     try
     
         [data, header] = sload(FilePath);
@@ -25,7 +27,7 @@ function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpa
         a(header.EVENT.TYP(a-1) == analysis.settings.task.classes_old(1)) = [];
         a(header.EVENT.TYP(a-1) == analysis.settings.task.classes_old(2)) = [];
         labels = header.EVENT.TYP(a);
-        if(~isempty(strfind(MATpath,'rhrst')))
+        if(~isempty(strfind(MATpath,'rhrst')) || ~isempty(strfind(MATpath,'flrst')) || ~isempty(strfind(MATpath,'extrst')))
             Class = 1;
         else
             Class = 2;
@@ -160,19 +162,22 @@ function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpa
     % Crop to trials
     fdata = [];
     ftrlbl = [];
+    flabel = [];
     for i=1:size(ftrials,1)
         fdata = [fdata; sfeats(ftrials(i,1):ftrials(i,2),:)];
         ftrlbl = [ftrlbl; i*ones(ftrials(i,2)-ftrials(i,1)+1,1)];
+        flabel = [flabel; labels(i)*ones(ftrials(i,2) - ftrials(i,1) + 1,1)];
     end
-
+    flabel = (~(flabel == FLEXION_EVENT | flabel == EXTENSION_EVENT | flabel == EXTENSION_EVENT_OLD)) + 1;
     % Single-sample accuracies
     prob = [];
+    
     for i=1:size(fdata,1)
         [usl prob(i,:)] = gauClassifier(analysis.tools.net.gau.M, analysis.tools.net.gau.C,...
             fdata(i,:));
     end
     [maxV maxI] = max(prob');
-    SAccA = 100*sum(maxI==Class)/size(fdata,1);
+    SAccA = 100*sum(maxI==flabel')/size(fdata,1);
 
     probdata = [];
     for i=1:max(unique(ftrlbl))

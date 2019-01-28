@@ -2,7 +2,7 @@ addpath(genpath('~/dev/cnbi-smrtrain/'));
 lap = load('laplacian16.mat');
 lap = lap.lap;
 
-Path = '~/data/Sinergia';
+Path = '~/data/Sinergia/';
 
 SavePath = '~/dev/shamBCIFESData/Data/';
 
@@ -20,7 +20,7 @@ SubDir = SubDir(isd);
 disp('Generating playback files')
 
 for subject = 1:length(SubDir)
-    disp(['Doing analysis for subject' num2str(subject)])
+    disp(['Doing analysis for subject ' SubDir(subject).name])
     Acc= {};
     TrAcc = {};
     labels = {};

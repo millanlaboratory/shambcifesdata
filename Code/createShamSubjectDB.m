@@ -2,7 +2,7 @@ addpath(genpath('~/dev/cnbi-smrtrain/'));
 lap = load('laplacian16.mat');
 lap = lap.lap;
 
-Path = '~/data/Sinergia/';
+Path = '~/data/';
 
 SavePath = '~/dev/shamBCIFESData/Data/';
 

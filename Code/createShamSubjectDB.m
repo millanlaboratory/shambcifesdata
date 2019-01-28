@@ -4,7 +4,7 @@ lap = lap.lap;
 
 Path = '~/data/';
 
-SavePath = '~/dev/shamBCIFESData/Data/';
+SavePath = '~/dev/shambcifesdata/Data/';
 
 if ~exist(SavePath, 'dir')
     mkdir(SavePath)

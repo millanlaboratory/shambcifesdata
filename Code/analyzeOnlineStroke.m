@@ -1,7 +1,11 @@
-function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpath, lap)
+function [SAccA, TrAccA, probdata, labels, success] = analyzeOnlineStroke(FilePath, MATpath, lap)
     FLEXION_EVENT = 782;
     EXTENSION_EVENT = 784;
     EXTENSION_EVENT_OLD = 781;
+    SUCCESS = 897;
+    TIMEOUT = 898;
+    FAILURE = 899;
+    
     try
     
         [data, header] = sload(FilePath);
@@ -12,15 +16,13 @@ function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpa
         TrAccA = NaN;
         probdata = NaN;
         labels = NaN;
+        success = NaN;
         return
     end
 
     try
         analysis = load(MATpath);
         analysis = analysis.analysis;
-        if sum(analysis.settings.task.classes_old == 781) > 0
-           disp('Duplicated '); 
-        end
         a = find(header.EVENT.TYP == analysis.settings.task.classes_old(1) | ...
             header.EVENT.TYP == analysis.settings.task.classes_old(2));
         
@@ -39,6 +41,7 @@ function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpa
         TrAccA = NaN;    
         probdata = NaN;
         labels = NaN;
+        success = NaN;
         return
     end
 
@@ -52,6 +55,8 @@ function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpa
     % Trial extraction
     pos = header.EVENT.POS;
     dur = header.EVENT.DUR;
+    success = header.EVENT.TYP(header.EVENT.TYP == SUCCESS | header.EVENT.TYP == TIMEOUT | header.EVENT.TYP == FAILURE) == SUCCESS;
+   
     cf = find(header.EVENT.TYP==781);
     cf(header.EVENT.TYP(cf-1) == 781) = [];
     cue = cf-1;
@@ -61,6 +66,7 @@ function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpa
         SAccA = NaN;
         TrAccA = NaN;
         probdata = NaN;
+        success = NaN;
         disp('Too few trials, skipping...');
         return;
     end
@@ -136,7 +142,10 @@ function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpa
     % Remap trials to PSD space
     ftrials(:,1) = floor(trials(:,1)/32)+1;
     ftrials(:,2) = floor(trials(:,2)/32)-15;
-
+    %ftrials(:,2) = floor(trials(:,2)/32)+1;
+%     ftrials(:,1) = floor(trials(:,1)/32)+16;
+%     ftrials(:,2) = floor(trials(:,2)/32)+1;
+    
     % Find features used
     UsedFeat = [];
     fInd = 0;
@@ -183,6 +192,5 @@ function [SAccA, TrAccA, probdata, labels] = analyzeOnlineStroke(FilePath, MATpa
     for i=1:max(unique(ftrlbl))
         probdata{i} = prob(ftrlbl==i,:);
     end
-
-    TrAccA = 100*length(find(header.EVENT.TYP==897))/length(find(header.EVENT.TYP==781));
+    TrAccA = 100*mean(success);
 end

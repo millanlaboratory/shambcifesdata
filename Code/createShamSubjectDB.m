@@ -2,9 +2,9 @@ addpath(genpath('~/dev/cnbi-smrtrain/'));
 lap = load('laplacian16.mat');
 lap = lap.lap;
 
-Path = '~/data/';
+Path = '~/data/Sinergia';
 
-SavePath = '~/dev/shambcifesdata/Data/';
+SavePath = '~/dev/shamBCIFESData/Data/';
 
 if ~exist(SavePath, 'dir')
     mkdir(SavePath)
@@ -93,7 +93,7 @@ for subject = 1:length(SubDir)
                         continue;
                     end
 
-                    [rAcc, rTrAcc, probdata, rLabels] = analyzeOnlineStroke(GDFPath, MATPath, lap);
+                    [rAcc, rTrAcc, probdata, rLabels, success] = analyzeOnlineStroke(GDFPath, MATPath, lap);
                 else
                     load([SavePath Sub '/' GDFName(1:end-4) '.mat']);
                 end

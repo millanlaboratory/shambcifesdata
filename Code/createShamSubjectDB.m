@@ -104,7 +104,7 @@ for subject = 1:length(SubDir)
                             % Create subject's playback folder
                             mkdir(SavePath,Sub);
                         end
-                        if( (length(probdata)>15) && (rAcc >=40))
+                        if( (length(probdata)>15) && (rAcc >=40) && ~isnan(probdata{1,1}))
                             run = run+1;
                             Acc{onses}(run) = rAcc;
                             TrAcc{onses}(run) = rTrAcc;

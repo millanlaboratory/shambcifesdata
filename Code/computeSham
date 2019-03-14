@@ -1,5 +1,4 @@
 cd ~/dev/shambcifesdata/
-cmd=(dialog --keep-tite --inputbox "Username:" 22 76 --passwordbox "Password:" 22 76)
 git add .
 git commit -m "update DB"
 git push

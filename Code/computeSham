@@ -17,13 +17,13 @@ case $? in
     -1)
         echo "An unexpected error has occurred.";;
 esac
-git add .
-git commit -m "update DB"
-git push https://$user:$pwd@github.com/millanlaboratory/shambcifesdata.git
-git pull https://$user:$pwd@github.com/millanlaboratory/shambcifesdata.git
+git add . -q
+git commit -m "update DB" -q
+git push https://$user:$pwd@github.com/millanlaboratory/shambcifesdata.git -q
+git pull https://$user:$pwd@github.com/millanlaboratory/shambcifesdata.git -q
 cd Code
 matlab -nodisplay -nojvm -nodesktop -nosplash -r "run createShamSubjectDB; exit;" -sd ${HOME}/dev/shambcifesdata/Code/
 cd ..
 git add .
-git commit -m "update DB"
-git push https://$user:$pwd@github.com/millanlaboratory/shambcifesdata.git
+git commit -m "update DB" -q
+git push https://$user:$pwd@github.com/millanlaboratory/shambcifesdata.git -q

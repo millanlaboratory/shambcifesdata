@@ -21,7 +21,7 @@ function [medianThreshold, stdThreshold] = findThreshold(probdata,rLabels, succe
         endProbas(trial,:) = [cumulativeSum(end) length(currentsProbas) < 177 rLabels(trial)];
     end
     endProbasMovement = endProbas(endProbas(:,3) ~= 783,1);
-    medianThreshold = median(endProbasMovement);
-    stdThreshold = std(endProbasMovement);
+    medianThreshold = nanmedian(endProbasMovement);
+    stdThreshold = nanstd(endProbasMovement);
 end
 

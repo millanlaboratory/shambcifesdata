@@ -7,10 +7,10 @@ case $? in
         
         # The result from ENTRY command look like: username|password
         # This command use to cut the first column -> get username
-        echo "User Name: `echo $ENTRY | cut -d'|' -f1`"
+        user=`echo $ENTRY | cut -d'|' -f1`
         
         # This command use to cut the second column -> get password
-        echo "Password : `echo $ENTRY | cut -d'|' -f2`"
+        pwd=`echo $ENTRY | cut -d'|' -f2`
     ;;
     1)
         echo "Stop login.";;

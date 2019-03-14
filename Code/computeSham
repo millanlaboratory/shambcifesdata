@@ -1,7 +1,9 @@
 cd ~/dev/shambcifesdata/
+IFS='|' read user pw < <( zenity --password --username )
+echo $user $pw
 git add .
 git commit -m "update DB"
-git push
+git push https://$user:$pw@c4science.ch/diffusion/7444/shambcifesdata.git
 git pull
 cd Code
 matlab -nodisplay -nojvm -nodesktop -nosplash -r "run createShamSubjectDB; exit;" -sd ${HOME}/dev/shambcifesdata/Code/

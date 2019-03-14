@@ -3,7 +3,7 @@ lap = load('laplacian16.mat');
 lap = lap.lap;
 subjectsToAnalyze = load('/tmp/sinergia/finishedEntries.mat');
 subjectsToAnalyze = convertCharsToStrings(subjectsToAnalyze.finished_entries')
-if(isempty(finished_entries))
+if(isempty(subjectsToAnalyze))
     disp('Could not find finished subject list');
     exit();
 end
@@ -44,98 +44,120 @@ for subject = 1:length(SubDir)
     classifiersFlex = {};
     classifiersExt = {};
     classifierCounter = zeros(2,1);
-%     try
-        for i = 1:length(classifierFiles)
-            if isempty(strfind(classifierFiles(i).name, 'smr.mat'))
-                if strfind(classifierFiles(i).name, 'flrst')
-                    classifierCounter(1) = classifierCounter(1) + 1;
-                    classifiersFlex{classifierCounter(1)} = classifierFiles(i).name;
-                elseif strfind(classifierFiles(i).name, 'extrst')
-                    classifierCounter(2) = classifierCounter(2) + 1;
-                    classifiersExt{classifierCounter(2)} = classifierFiles(i).name;
-                end
+    for i = 1:length(classifierFiles)
+        if isempty(strfind(classifierFiles(i).name, 'smr.mat'))
+            if strfind(classifierFiles(i).name, 'flrst')
+                classifierCounter(1) = classifierCounter(1) + 1;
+                classifiersFlex{classifierCounter(1)} = classifierFiles(i).name;
+            elseif strfind(classifierFiles(i).name, 'extrst')
+                classifierCounter(2) = classifierCounter(2) + 1;
+                classifiersExt{classifierCounter(2)} = classifierFiles(i).name;
             end
         end
-        classifierIndex = ones(2,1);
-        for ses=1:length(SubSes)
-            % Check if it is an online session
-            SesName = SubSes(ses).name;
+    end
+    classifierIndex = ones(2,1);
+    for ses=1:length(SubSes)
+        % Check if it is an online session
+        SesName = SubSes(ses).name;
 
-            if ~isempty(strfind(SesName, 'training'))
-                onses = onses + 1;
-                sessionInfos = strsplit(SesName, '_');
-                currentClassifier = '';
-                if(contains(SesName, 'flex'))
-                    if(floor(classifierIndex(1) / 2 + 1) < length(classifiersFlex))
-                        currentClassifier = classifiersFlex{floor(classifierIndex(1) / 2 + 1)};
-                    else
-                        currentClassifier = classifiersFlex{end};
-                    end
-                    classifierIndex(1) = classifierIndex(1) + 1;
-                elseif(contains(SesName, 'ext'))
-                    if(floor(classifierIndex(2) / 2 + 1) < length(classifiersExt))
-                        currentClassifier = classifiersExt{floor(classifierIndex(2) / 2 + 1)};
-                    else
-                        currentClassifier = classifiersExt{end};
-                    end
-                    classifierIndex(2) = classifierIndex(2) + 1;
-                else
-                    disp(['Session type not identified' sessionInfos{end}])
-                end
-                % Load log file
-                files = dir([Path '/' Sub '/' SesName '/*.gdf']);
-                run=0;
-                for fileIndex = 1:length(files)
+        if ~isempty(strfind(SesName, 'training'))
+            onses = onses + 1;
+            sessionInfos = strsplit(SesName, '_');
+            currentClassifier = '';
+            if(contains(SesName, 'flex'))
+                classifiers = classifiersFlex;
+            elseif(contains(SesName, 'ext'))
+                classifiers = classifiersExt;
+            else
+                disp(['Session type not identified' sessionInfos{end}])
+            end
+            % Load log file
+            files = dir([Path '/' Sub '/' SesName '/*.gdf']);
+            run=0;
+            for fileIndex = 1:length(files)
 
-                    GDFName = files(fileIndex).name;
-                    GDFPath = [Path '/' Sub '/' SesName '/' GDFName];
-                    MATPath = [Path '/' Sub '/' currentClassifier];
+                GDFName = files(fileIndex).name;
+                GDFPath = [Path '/' Sub '/' SesName '/' GDFName];
+                MATPath = [Path '/' Sub '/' currentClassifier];
+                gdfDate = strsplit(GDFName(1:end-4), '.');
+                gdfDate = str2num(gdfDate{2});
 
-                    if(exist(GDFPath,'file')>0)
-                        if( ( files(fileIndex).bytes/(1024^2)) < 1.0 ) % Get rid of too small GDFs, probably failed attempts to start the loop or interrupted runs
-                            continue;
-                        end
-                    else
+                if(exist(GDFPath,'file')>0)
+                    if( ( files(fileIndex).bytes/(1024^2)) < 1.0 ) % Get rid of too small GDFs, probably failed attempts to start the loop or interrupted runs
                         continue;
                     end
+                else
+                    continue;
+                end
 
-                    if(exist([SavePath Sub '/' GDFName(1:end-4) '.mat'],'file') == 0)
-                        if(exist([SavePath 'Rej/' GDFName(1:end-4) '.mat'],'file') > 0) % Maybe it is on the rejected runs, do not recompute it
-                            continue;
-                        end
-                        [rAcc, rTrAcc, probdata, rLabels, success] = analyzeOnlineStroke(GDFPath, MATPath, lap);
-                    else
-                        load([SavePath Sub '/' GDFName(1:end-4) '.mat']);
+                if(exist([SavePath Sub '/' GDFName(1:end-4) '.mat'],'file') == 0)
+                    if(exist([SavePath 'Rej/' GDFName(1:end-4) '.mat'],'file') > 0) % Maybe it is on the rejected runs, do not recompute it
+                        continue;
                     end
-
-                    if(~isnan(rAcc))
-                        % Save playback probability file
-                        if(~exist([SavePath '/' Sub],'dir'))
-                            % Create subject's playback folder
-                            mkdir(SavePath,Sub);
+                    bestThresholdSTD = 1;
+                    bestThresholdMedian = 0;
+                    currentValues.rAcc = [];
+                    currentValues.rTrAcc = [];
+                    currentValues.probdata = [];
+                    currentValues.rLabels = [];
+                    currentValues.success = [];
+                    bestValues = [];
+                    for index = 1:length(classifiers)
+                        classifierDate = strsplit(classifiers{index}(1:end-4), '_');
+                        classifierDate = str2num(classifierDate{3});
+                        if classifierDate <= gdfDate
+                            MATPath = [Path '/' Sub '/' classifiers{index}];
+                            [currentValues.rAcc, currentValues.rTrAcc, currentValues.probdata, ...
+                                currentValues.rLabels, currentValues.success] = ...
+                                analyzeOnlineStroke(GDFPath, MATPath, lap);
+                            if(isnan(currentValues.rAcc))
+                                break;
+                            end
+                            [threhsoldMean, threhsoldSTD] = findThreshold(currentValues.probdata, currentValues.rLabels, currentValues.success);
+                            if(threhsoldSTD < bestThresholdSTD)
+                                bestValues = currentValues;
+                                bestThresholdSTD = threhsoldSTD;
+                                bestThresholdMedian = threhsoldMean;
+                            end
                         end
-                        if( (length(probdata)>15) && (rAcc >=40) && sum(sum(isnan(probdata{1,1}))) == 0)
-                            run = run+1;
-                            Acc{onses}(run) = rAcc;
-                            TrAcc{onses}(run) = rTrAcc;
-                            labels{onses}{run} = rLabels;
-                            disp(['Subject: ' Sub ' , Session: ' num2str(onses) ' , Run: ' num2str(run) ' , Acc: ' num2str(round(Acc{onses}(run)))...
-                                ' , Trial Acc: ' num2str(round(TrAcc{onses}(run)))]);
-                            if (~exist([SavePath Sub '/' GDFName(1:end-4) '.mat'], 'file'))
-                                save([SavePath Sub '/' GDFName(1:end-4) '.mat'],'probdata','rAcc','rTrAcc', 'rLabels');
-                            end
-                        else
-                            if (~exist([SavePath Sub '/' GDFName(1:end-4) '.mat'], 'file'))
-                                save([SavePath 'Rej/' GDFName(1:end-4) '.mat'],'probdata','rAcc','rTrAcc', 'rLabels');
-                            end
+                    end
+                    if(isnan(currentValues.rAcc))
+                        break;
+                    end
+                    probdata = bestValues.probdata;
+                    rAcc = bestValues.rAcc;
+                    rTrAcc = bestValues.rTrAcc;
+                    rLabels = bestValues.rLabels;
+                else
+                    load([SavePath Sub '/' GDFName(1:end-4) '.mat']);
+                end
+
+                if(~isnan(rAcc))
+                    % Save playback probability file
+                    if(~exist([SavePath '/' Sub],'dir'))
+                        % Create subject's playback folder
+                        mkdir(SavePath,Sub);
+                    end
+                    if( (length(probdata)>15) && (rAcc >=40) && sum(sum(isnan(probdata{1,1}))) == 0)
+                        run = run+1;
+                        Acc{onses}(run) = rAcc;
+                        TrAcc{onses}(run) = rTrAcc;
+                        labels{onses}{run} = rLabels;
+                        
+                        disp(['Subject: ' Sub ' , Session: ' num2str(onses) ' , Run: ' num2str(run) ' , Acc: ' num2str(round(Acc{onses}(run)))...
+                            ' , Trial Acc: ' num2str(round(TrAcc{onses}(run))) ' Threshold STD ' num2str(bestThresholdSTD)]);
+                        if (~exist([SavePath Sub '/' GDFName(1:end-4) '.mat'], 'file'))
+                            save([SavePath Sub '/' GDFName(1:end-4) '.mat'],'probdata','rAcc','rTrAcc', 'rLabels', 'bestThresholdMedian', 'bestThresholdSTD');
+                        end
+                    else
+                        if (~exist([SavePath Sub '/' GDFName(1:end-4) '.mat'], 'file'))
+                            save([SavePath 'Rej/' GDFName(1:end-4) '.mat'],'probdata','rAcc','rTrAcc', 'rLabels', 'bestThresholdMedian', 'bestThresholdSTD');
                         end
                     end
                 end
             end
         end
-%     catch
-       disp(['Problem in recreating probabilities for subject ' Sub]);
-%     end
+    end
     Sum.Acc = Acc;
     Sum.TrAcc = TrAcc;
     Sum.labels = labels;

@@ -1,7 +1,7 @@
 addpath(genpath('~/dev/cnbi-smrtrain/'));
 close all;
-playbackFolder = '/home/cnbi/dev/shamBCIFESData/Data/';
-files = dir([playbackFolder 's07']);
+playbackFolder = '/home/cnbi/dev/shambcifesdata/Data/';
+files = dir([playbackFolder 's03']);
 for fileIndex = 3:length(files)
     if contains(files(fileIndex).name, "flexion")
         disp(files(fileIndex).name);
@@ -39,10 +39,10 @@ for fileIndex = 3:length(files)
 %                figure()
 %                hist(endProbasMovement);
         else
-
-        end
         figure(1);
         hold on;
         errorbar(1:length(endProbMean), endProbMean,  endProbSTD);
+        end
+
     end
 end

@@ -1,13 +1,29 @@
 cd ~/dev/shambcifesdata/
-IFS='|' read user pw < <( zenity --password --username )
-echo $user $pw
+ENTRY=`zenity --password --username`
+case $? in
+    0)
+        # At this step, you can assign a variable to username's value like this:
+        # VAR_USERNAME=`echo $ENTRY | cut -d'|' -f1`
+        
+        # The result from ENTRY command look like: username|password
+        # This command use to cut the first column -> get username
+        user=`echo $ENTRY | cut -d'|' -f1`
+        
+        # This command use to cut the second column -> get password
+        pwd=`echo $ENTRY | cut -d'|' -f2`
+    ;;
+    1)
+        echo "Stop login.";;
+    -1)
+        echo "An unexpected error has occurred.";;
+esac
 git add .
-git commit -m "update DB"
-git push https://$user:$pw@c4science.ch/diffusion/7444/shambcifesdata.git
-git pull
+git commit -m "update DB" -q
+git push https://$user:$pwd@github.com/millanlaboratory/shambcifesdata.git -q
+git pull https://$user:$pwd@github.com/millanlaboratory/shambcifesdata.git -q
 cd Code
 matlab -nodisplay -nojvm -nodesktop -nosplash -r "run createShamSubjectDB; exit;" -sd ${HOME}/dev/shambcifesdata/Code/
 cd ..
 git add .
-git commit -m "update DB"
-git push
+git commit -m "update DB" -q
+git push https://$user:$pwd@github.com/millanlaboratory/shambcifesdata.git -q

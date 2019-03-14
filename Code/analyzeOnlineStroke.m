@@ -1,5 +1,6 @@
 function [SAccA, TrAccA, probdata, labels, success] = analyzeOnlineStroke(FilePath, MATpath, lap)
     FLEXION_EVENT = 782;
+    REST_EVENT = 783;
     EXTENSION_EVENT = 784;
     EXTENSION_EVENT_OLD = 781;
     SUCCESS = 897;
@@ -23,8 +24,8 @@ function [SAccA, TrAccA, probdata, labels, success] = analyzeOnlineStroke(FilePa
     try
         analysis = load(MATpath);
         analysis = analysis.analysis;
-        a = find(header.EVENT.TYP == analysis.settings.task.classes_old(1) | ...
-            header.EVENT.TYP == analysis.settings.task.classes_old(2));
+        a = find(header.EVENT.TYP == FLEXION_EVENT | header.EVENT.TYP == EXTENSION_EVENT |...
+            header.EVENT.TYP == REST_EVENT | header.EVENT.TYP == EXTENSION_EVENT_OLD);
         
         a(header.EVENT.TYP(a-1) == analysis.settings.task.classes_old(1)) = [];
         a(header.EVENT.TYP(a-1) == analysis.settings.task.classes_old(2)) = [];

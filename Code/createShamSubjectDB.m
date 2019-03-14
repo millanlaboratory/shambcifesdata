@@ -36,7 +36,7 @@ for subject = 1:length(SubDir)
     classifiersFlex = {};
     classifiersExt = {};
     classifierCounter = zeros(2,1);
-    try
+%     try
         for i = 1:length(classifierFiles)
             if isempty(strfind(classifierFiles(i).name, 'smr.mat'))
                 if strfind(classifierFiles(i).name, 'flrst')
@@ -57,20 +57,22 @@ for subject = 1:length(SubDir)
                 onses = onses + 1;
                 sessionInfos = strsplit(SesName, '_');
                 currentClassifier = '';
-                if(strcmp(sessionInfos{end}, 'flex'))
+                if(contains(SesName, 'flex'))
                     if(floor(classifierIndex(1) / 2 + 1) < length(classifiersFlex))
                         currentClassifier = classifiersFlex{floor(classifierIndex(1) / 2 + 1)};
                     else
                         currentClassifier = classifiersFlex{end};
                     end
                     classifierIndex(1) = classifierIndex(1) + 1;
-                else
+                elseif(contains(SesName, 'ext'))
                     if(floor(classifierIndex(2) / 2 + 1) < length(classifiersExt))
                         currentClassifier = classifiersExt{floor(classifierIndex(2) / 2 + 1)};
                     else
                         currentClassifier = classifiersExt{end};
                     end
                     classifierIndex(2) = classifierIndex(2) + 1;
+                else
+                    disp(['Session type not identified' sessionInfos{end}])
                 end
                 % Load log file
                 files = dir([Path '/' Sub '/' SesName '/*.gdf']);
@@ -104,7 +106,7 @@ for subject = 1:length(SubDir)
                             % Create subject's playback folder
                             mkdir(SavePath,Sub);
                         end
-                        if( (length(probdata)>15) && (rAcc >=40) && ~isnan(probdata{1,1}))
+                        if( (length(probdata)>15) && (rAcc >=40) && sum(sum(isnan(probdata{1,1}))) == 0)
                             run = run+1;
                             Acc{onses}(run) = rAcc;
                             TrAcc{onses}(run) = rTrAcc;
@@ -123,9 +125,9 @@ for subject = 1:length(SubDir)
                 end
             end
         end
-    catch
+%     catch
        disp(['Problem in recreating probabilities for subject ' Sub]);
-    end
+%     end
     Sum.Acc = Acc;
     Sum.TrAcc = TrAcc;
     Sum.labels = labels;

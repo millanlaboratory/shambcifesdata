@@ -10,6 +10,7 @@ function [SAccA, TrAccA, probdata, labels, success] = analyzeOnlineStroke(FilePa
     try
     
         [data, header] = sload(FilePath);
+        data(isnan(data)) = 0;
 
     catch e
         disp(['Problem loading file, skipping: ' FilePath]);

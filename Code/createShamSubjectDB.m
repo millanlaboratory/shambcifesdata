@@ -1,7 +1,12 @@
 addpath(genpath('~/dev/cnbi-smrtrain/'));
 lap = load('laplacian16.mat');
 lap = lap.lap;
-
+subjectsToAnalyze = load('/tmp/sinergia/finishedEntries.mat');
+subjectsToAnalyze = convertCharsToStrings(subjectsToAnalyze.finished_entries')
+if(isempty(finished_entries))
+    disp('Could not find finished subject list');
+    exit();
+end
 Path = '~/data/';
 
 SavePath = '~/dev/shambcifesdata/Data/';
@@ -20,6 +25,9 @@ SubDir = SubDir(isd);
 disp('Generating playback files')
 
 for subject = 1:length(SubDir)
+    if ~contains(subjectsToAnalyze, SubDir(subject).name)
+        break;
+    end
     disp(['Doing analysis for subject ' SubDir(subject).name])
     Acc= {};
     TrAcc = {};

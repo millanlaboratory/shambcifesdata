@@ -1,1 +1,2 @@
 sudo cp Code/computeSham /usr/bin/computeSham
+sudo cp Code/ndf_mi_.m /home/cnbi/.cnbitk/cnbimi/ndf/ndf_mi_.m

@@ -294,6 +294,7 @@ function ndf_mi_(arg0, arg1, arg2)
                         user.probindex = 1;
                     end
                     if (id_event == 782 || id_event == 783 || id_event == 784)
+                        printf('%d',id_event);
                         currentClass = id_event;
                         a = find(user.shprobs.rLabels == currentClass);
                         cTrial = a(randi(length(a), 1));

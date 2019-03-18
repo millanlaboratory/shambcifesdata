@@ -195,4 +195,5 @@ function [SAccA, TrAccA, probdata, labels, success] = analyzeOnlineStroke(FilePa
         probdata{i} = prob(ftrlbl==i,:);
     end
     TrAccA = 100*mean(success);
+    labels(labels == EXTENSION_EVENT_OLD) = EXTENSION_EVENT;
 end

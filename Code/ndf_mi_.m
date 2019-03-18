@@ -294,11 +294,16 @@ function ndf_mi_(arg0, arg1, arg2)
                         user.probindex = 1;
                     end
                     if (id_event == 782 || id_event == 783 || id_event == 784)
+<<<<<<< HEAD
                         printf('%d',id_event);
+=======
+                        printf('tid attached1')
+>>>>>>> 98ce83c9b19aa9f15e41fc44b80e7ad9e56571bf
                         currentClass = id_event;
                         a = find(user.shprobs.rLabels == currentClass);
                         cTrial = a(randi(length(a), 1));
                     end
+                    printf('tid attached2')
                 end
             else
                 tid_attach(loop.iD, loop.cfg.ndf.id);
@@ -310,21 +315,27 @@ function ndf_mi_(arg0, arg1, arg2)
                 if(user.probindex > size(user.shprobs.probdata{cTrial},1))
                     user.probindex = 1; % Rewind this trial
                 end
-
+                %printf('tid 1')
                 % Replace classifier probs
+                printf("%i", cTrial);
+                
+                
                 tmpshprobs = user.shprobs.probdata{cTrial}(user.probindex,:);
+                printf("%f", tmpshprobs)
                 [user.bci.support, tmp.nfeat] = ...
                     eegc3_smr_classify_sh(user.bci.analysis, buffer.eeg, user.bci.support, tmpshprobs);
-
+                %printf('tid 2')
                 % Increment prob index
                 user.probindex = user.probindex + 1;
             else
                 % Normal processing
+                %printf('tid 4')
                 [user.bci.support, tmp.nfeat] = ...
                     eegc3_smr_classify(user.bci.analysis, buffer.eeg, user.bci.support);
+                %printf('tid 5')
             end
 
-
+            %printf('tid 3')
             % Handle sync TOBI iC communication
             if(tic_isattached(loop.iC) == true)
                 for t = 1:user.nTasks

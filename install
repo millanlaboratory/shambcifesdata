@@ -1,2 +1,3 @@
 sudo cp Code/computeSham /usr/bin/computeSham
 sudo cp Code/ndf_mi_.m /home/cnbi/.cnbitk/cnbimi/ndf/ndf_mi_.m
+sudo cp Code/eegc3_smr_classify_sh.m /opt/eegc3/modules/smr/eegc3_smr_classify_sh.m

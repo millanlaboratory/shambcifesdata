@@ -124,13 +124,13 @@ for subject = 1:length(SubDir)
                                 end
                             end
                         end
-                        if(isnan(currentValues.rAcc))
-                            break;
+                        if(~isnan(currentValues.rAcc))
+                            probdata = bestValues.probdata;
+                        	rAcc = bestValues.rAcc;
+                        	rTrAcc = bestValues.rTrAcc;
+                        	rLabels = bestValues.rLabels;
                         end
-                        probdata = bestValues.probdata;
-                        rAcc = bestValues.rAcc;
-                        rTrAcc = bestValues.rTrAcc;
-                        rLabels = bestValues.rLabels;
+
                     else
                         load([SavePath Sub '/' GDFName(1:end-4) '.mat']);
                     end

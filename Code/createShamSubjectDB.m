@@ -124,6 +124,10 @@ for subject = 1:length(SubDir)
                                 end
                             end
                         end
+                        probdata = NaN;
+                        rAcc = NaN;
+                        rTrAcc = NaN;
+                        rLabels = NaN;
                         if(~isnan(currentValues.rAcc))
                             probdata = bestValues.probdata;
                         	rAcc = bestValues.rAcc;
